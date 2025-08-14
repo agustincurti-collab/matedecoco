@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mate de Coco Bot – IA</title>
+  <style>
+    :root {
+      --mdc-black: #000000;
+      --mdc-dark: #121212;
+      --mdc-mid: #1f1f1f;
+      --mdc-light: #2a2a2a;
+      --mdc-accent: #1e90ff;
+      --mdc-text: #ffffff;
+      --mdc-text-dim: #b3b3b3;
+    }
+    html, body { height:100%; margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; background:#0b0b0b; color: var(--mdc-text);}
+    .page { max-width:900px; margin:0 auto; padding:48px 20px 120px; }
+    h1 { font-size:28px; margin:0 0 12px; }
+    p.lead { color: var(--mdc-text-dim); margin:0 0 24px; }
+    .mdc-launcher { position:fixed; right:22px; bottom:22px; width:56px; height:56px; border-radius:50%; border:none; background:var(--mdc-black); color:var(--mdc-text); display:grid; place-items:center; font-size:20px; cursor:pointer; box-shadow:0 10px 24px rgba(0,0,0,.45);}
+    .mdc-badge { position:absolute; top:-6px; right:-6px; background:var(--mdc-accent); color:white; width:18px; height:18px; border-radius:50%; display:grid; place-items:center; font-size:12px; }
+    .mdc-widget { position:fixed; right:20px; bottom:90px; width:360px; max-width:calc(100%-40px); height:520px; max-height:calc(100%-140px); background:var(--mdc-dark); border:1px solid #222; border-radius:16px; box-shadow:0 18px 48px rgba(0,0,0,.55); display:none; overflow:hidden; }
+    .mdc-header { background:var(--mdc-light); padding:14px 16px; display:flex; align-items:center; gap:10px; }
+    .mdc-avatar { width:34px; height:34px; border-radius:50%; background:radial-gradient(#333,#111); display:grid; place-items:center; font-weight:700; }
+    .mdc-title { font-weight:700; }
+    .mdc-subtitle { font-size:12px; color:var(--mdc-text-dim); }
+    .mdc-messages { height:calc(100%-164px); overflow-y:auto; padding:12px 12px 0; background: linear-gradient(180deg,#0f0f0f,#141414);}
+    .mdc-msg { max-width:82%; padding:10px 12px; border-radius:12px; margin:8px 0; line-height:1.35; font-size:14px; word-wrap:break-word; white-space:pre-wrap; }
+    .mdc-msg.bot { background:#1a1a1a; border:1px solid #262626; }
+    .mdc-msg.user { background:#0b3a6b; border:1px solid #0b2f55; margin-left:auto; }
+    .mdc-quick { display:flex; flex-wrap:wrap; gap:8px; padding:8px 12px; border-top:1px solid #1f1f1f; background:#111; }
+    .mdc-chip { border:1px solid #2b2b2b; background:#151515; color:var(--mdc-text); font-size:12px; padding:8px 10px; border-radius:999px; cursor:pointer; }
+    .mdc-input { display:flex; gap:8px; padding:10px; background:var(--mdc-black); border-top:1px solid #1f1f1f; }
+    .mdc-input input { flex:1; background:#121212; border:1px solid #222; color:var(--mdc-text); border-radius:10px; padding:10px 12px; outline:none; }
+    .mdc-input button { background:var(--mdc-accent); color:white; border:none; padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:700; }
+    .mdc-input button:disabled { opacity:.6; cursor:not-allowed; }
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0; }
+    @media (max-width:420px){ .mdc-widget{right:10px; left:10px; width:auto;} }
+  </style>
+</head>
+<body>
+<div class="page">
+<h1>👋 Mate de Coco Bot – IA</h1>
+<p class="lead">Abrí el chat abajo a la derecha. Responde con IA real y podés enviar leads a WhatsApp.</p>
+</div>
+
+<button class="mdc-launcher" id="mdc-launcher">💬<span class="mdc-badge" id="mdc-badge">1</span><span class="sr-only">Abrir chat</span></button>
+
+<section class="mdc-widget" id="mdc-widget">
+<header class="mdc-header">
+<div class="mdc-avatar">MC</div>
+<div><div class="mdc-title">Mate de Coco Bot</div><div class="mdc-subtitle">Asistente de matedecoco.design</div></div>
+</header>
+<main class="mdc-messages" id="mdc-messages" aria-live="polite"></main>
+<div class="mdc-quick" id="mdc-quick">
+<button class="mdc-chip" data-intent="portfolio">💡 Ver trabajos</button>
+<button class="mdc-chip" data-intent="pricing">💰 Precios</button>
+<button class="mdc-chip" data-intent="schedule">📅 Agendar</button>
+<button class="mdc-chip" data-intent="faq">❓ Preguntas</button>
+</div>
+<div class="mdc-input">
+<label class="sr-only" for="mdc-input">Escribí tu mensaje</label>
+<input id="mdc-input" type="text" placeholder="Escribí acá…" />
+<button id="mdc-send">Enviar</button>
+</div>
+</section>
+
+<script>
+const $=(s)=>document.querySelector(s);
+const widget=$('#mdc-widget'),launcher=$('#mdc-launcher'),badge=$('#mdc-badge'),messages=$('#mdc-messages'),input=$('#mdc-input'),sendBtn=$('#mdc-send');
+launcher.addEventListener('click',()=>{widget.style.display==='block'?widget.style.display='none':widget.style.display='block';badge.style.display='none';input.focus();});
+function addMsg(text,who='bot'){const el=document.createElement('div');el.className=`mdc-msg ${who}`;el.textContent=text;messages.appendChild(el);messages.scrollTop=messages.scrollHeight;}
+messages.dataset.history='[]';
+async function handleUser(text){
+  if(!text)return;
+  addMsg(text,'user');
+  input.value='';
+  const history=JSON.parse(messages.dataset.history);
+  history.push({role:'user',content:text});
+  messages.dataset.history=JSON.stringify(history);
+  addMsg('💭 Mate de Coco está pensando…','bot');
+  try{
+    const res=await fetch('https://tu-proyecto.vercel.app/api/chat',{ // <- reemplazá con tu URL de Vercel
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message:text,history})
+    });
+    const data=await res.json();
+    const last=messages.lastElementChild;
+    if(last&&last.textContent.includes('Mate de Coco está pensando'))last.remove();
+    addMsg(data.answer,'bot');
+    history.push({role:'assistant',content:data.answer});
+    messages.dataset.history=JSON.stringify(history);
+  }catch(e){addMsg('Ups, no pude conectarme con la IA. 😅','bot');}
+}
+sendBtn.addEventListener('click',()=>handleUser(input.value.trim()));
+input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();handleUser(input.value.trim());}});
+document.querySelectorAll('.mdc-chip').forEach(chip=>{chip.addEventListener('click',()=>{const intent=chip.dataset.intent;if(intent==='portfolio'){addMsg('Ver trabajos','user');handleUser('Muéstrame el portfolio');}if(intent==='pricing'){addMsg('Consultar precios','user');handleUser('Cuáles son los precios');}if(intent==='schedule'){addMsg('Agendar reunión','user');handleUser('Quiero agendar una reunión');}if(intent==='faq'){addMsg('Tengo otra pregunta','user');handleUser('Tengo una pregunta');}});});
+</script>
+</body>
+</html>
