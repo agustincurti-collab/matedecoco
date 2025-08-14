@@ -81,7 +81,7 @@ async function handleUser(text){
   messages.dataset.history=JSON.stringify(history);
   addMsg('💭 Mate de Coco está pensando…','bot');
   try{
-    const res=await fetch('https://tu-proyecto.vercel.app/api/chat',{ // <- reemplazá con tu URL de Vercel
+    const res=await fetch('https://matedecoco.vercel.app/',{ // <- reemplazá con tu URL de Vercel
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({message:text,history})
