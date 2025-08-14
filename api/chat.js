@@ -23,9 +23,19 @@ export default async function handler(req, res) {
     });
 
     const data = await response.json();
-    res.status(200).json({ answer: data.choices[0].message.content });
+
+    if (data?.choices?.[0]?.message?.content) {
+      res.status(200).json({ answer: data.choices[0].message.content });
+    } else if (data?.error) {
+      console.error('OpenAI error:', data.error);
+      res.status(500).json({ answer: 'Error de OpenAI: ' + (data.error.message || 'sin mensaje') });
+    } else {
+      console.error('Respuesta inesperada de OpenAI:', data);
+      res.status(500).json({ answer: 'Ups, respuesta inesperada de OpenAI 😅' });
+    }
+
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ answer: 'Ups, algo salió mal. 😅' });
+    console.error('Error en handler:', err);
+    res.status(500).json({ answer: 'Ups, algo salió mal 😅' });
   }
 }
